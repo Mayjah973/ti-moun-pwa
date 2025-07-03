@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ti Moun Savoir AI - Application éducative pour préserver les langues de Guyane">
+    <title>Ti Moun Savoir AI</title>
+
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4ecdc4">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <!-- Mobile Meta -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Ti Moun">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-192.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Installation Banner -->
+    <div id="installBanner" class="install-banner" style="display: none;">
+        <div class="install-content">
+            <span>📱 Installer Ti Moun sur votre appareil</span>
+            <button id="installBtn" class="install-btn">Installer</button>
+            <button id="dismissBtn" class="dismiss-btn">✕</button>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app" class="app-container">
+
+        <!-- Header -->
+        <header class="app-header">
+            <h1>🌟 Ti Moun Savoir AI</h1>
+            <p>Aprann ak kilti Gwiyanè</p>
+            <div class="connection-status" id="connectionStatus">🟢 En ligne</div>
+        </header>
+
+        <!-- User Profile -->
+        <section class="user-profile" id="userProfile">
+            <div class="profile-avatar">👧</div>
+            <div class="profile-info">
+                <h3 id="userName">Marie, 8 ans</h3>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="userPoints">147</span>
+                        <span class="stat-label">Points</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="userQuiz">23</span>
+                        <span class="stat-label">Quiz</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="userContrib">5</span>
+                        <span class="stat-label">Contributions</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Language Selector -->
+        <section class="language-selector">
+            <button class="lang-btn active" data-lang="fr">Français</button>
+            <button class="lang-btn" data-lang="gcr">Kréyòl</button>
+            <button class="lang-btn" data-lang="car">Kalina</button>
+            <button class="lang-btn" data-lang="oym">Wayampi</button>
+            <button class="lang-btn" data-lang="djk">Aluku</button>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Menu Principal -->
+            <section class="main-menu" id="mainMenu">
+                <div class="menu-grid">
+                    <button class="menu-card" data-action="quiz">
+                        <div class="menu-icon">🎯</div>
+                        <h3>Quiz Intelligents</h3>
+                        <p>Questions adaptées culture guyanaise</p>
+                    </button>
+
+                    <button class="menu-card" data-action="stories">
+                        <div class="menu-icon">📚</div>
+                        <h3>Histoires Culturelles</h3>
+                        <p>Contes créoles et légendes</p>
+                    </button>
+
+                    <button class="menu-card" data-action="corpus">
+                        <div class="menu-icon">💎</div>
+                        <h3>Aider l'IA</h3>
+                        <p>Enseigne ta langue à l'IA</p>
+                    </button>
+
+                    <button class="menu-card" data-action="progress">
+                        <div class="menu-icon">📈</div>
+                        <h3>Mes Progrès</h3>
+                        <p>Statistiques et badges</p>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Interface Quiz -->
+            <section class="quiz-interface hidden" id="quizInterface">
+                <div class="quiz-header">
+                    <h2 id="quizTitle">Quiz Mathématiques</h2>
+                    <div class="quiz-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">Question 1 sur 5</span>
+                    </div>
+                </div>
+
+                <div class="question-card" id="questionCard">
+                    <div class="question-text" id="questionText">Chargement...</div>
+                    <div class="answer-options" id="answerOptions">
+                        <!-- Options générées dynamiquement -->
+                    </div>
+                    <button class="submit-btn" id="submitAnswer">Valider</button>
+                </div>
+
+                <div class="quiz-results hidden" id="quizResults">
+                    <div class="results-content">
+                        <h3>🎉 Quiz Terminé !</h3>
+                        <div class="score-display">
+                            <span class="score-value" id="finalScore">0/0</span>
+                            <span class="score-percentage" id="scorePercentage">0%</span>
+                        </div>
+                        <div class="points-earned">
+                            +<span id="pointsEarned">0</span> points gagnés !
+                        </div>
+                        <div class="results-actions">
+                            <button class="btn-secondary" onclick="restartQuiz()">🔄 Recommencer</button>
+                            <button class="btn-primary" onclick="showMenu()">🏠 Menu</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interface Corpus -->
+            <section class="corpus-interface hidden" id="corpusInterface">
+                <div class="corpus-header">
+                    <h2>💎 Enseigne à l'IA</h2>
+                    <p>Aide tous les enfants de Guyane à apprendre !</p>
+                </div>
+
+                <form class="corpus-form" id="corpusForm">
+                    <div class="form-group">
+                        <label for="frenchText">🇫🇷 En français :</label>
+                        <input type="text" id="frenchText" placeholder="Ex: Bonjour" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="localText">🗣️ Dans ta langue :</label>
+                        <input type="text" id="localText" placeholder="Ex: Bonjou" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="languageSelect">🌍 Quelle langue ?</label>
+                        <select id="languageSelect" required>
+                            <option value="creole_guyanais">Créole Guyanais</option>
+                            <option value="kalina">Kalina (Galibi)</option>
+                            <option value="wayampi">Wayampi</option>
+                            <option value="aluku">Aluku (Boni)</option>
+                            <option value="saramaka">Saramaka</option>
+                            <option value="teko">Teko (Emerillon)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-btn">🌟 Contribuer</button>
+                </form>
+
+                <div class="recent-contributions">
+                    <h3>💬 Dernières contributions :</h3>
+                    <div id="contributionsList">
+                        <!-- Contributions récentes -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interface Histoires -->
+            <section class="stories-interface hidden" id="storiesInterface">
+                <div class="stories-header">
+                    <h2>📚 Histoires de Guyane</h2>
+                </div>
+
+                <div class="stories-grid" id="storiesGrid">
+                    <!-- Histoires générées dynamiquement -->
+                </div>
+            </section>
+
+            <!-- Interface Progrès -->
+            <section class="progress-interface hidden" id="progressInterface">
+                <div class="progress-header">
+                    <h2>📈 Tes Progrès</h2>
+                </div>
+
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalQuiz">0</span>
+                            <span class="stat-desc">Quiz terminés</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">💎</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalContrib">0</span>
+                            <span class="stat-desc">Contributions</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalPoints">0</span>
+                            <span class="stat-desc">Points totaux</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="achievements">
+                    <h3>🏆 Tes Badges</h3>
+                    <div class="badges-grid" id="badgesGrid">
+                        <!-- Badges générés dynamiquement -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-action="menu">
+                <div class="nav-icon">🏠</div>
+                <span class="nav-label">Accueil</span>
+            </button>
+            <button class="nav-item" data-action="quiz">
+                <div class="nav-icon">🎯</div>
+                <span class="nav-label">Quiz</span>
+            </button>
+            <button class="nav-item" data-action="stories">
+                <div class="nav-icon">📚</div>
+                <span class="nav-label">Histoires</span>
+            </button>
+            <button class="nav-item" data-action="corpus">
+                <div class="nav-icon">💎</div>
+                <span class="nav-label">Corpus</span>
+            </button>
+            <button class="nav-item" data-action="progress">
+                <div class="nav-icon">📈</div>
+                <span class="nav-label">Progrès</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Chargement...</p>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast hidden" id="toast">
+        <div class="toast-content">
+            <span class="toast-icon">ℹ️</span>
+            <span class="toast-message" id="toastMessage">Message</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+
+    <!-- PWA Installation -->
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(registration) {
+                        console.log('SW enregistré avec succès:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Échec enregistrement SW:', error);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installBanner = document.getElementById('installBanner');
+        const installBtn = document.getElementById('installBtn');
+        const dismissBtn = document.getElementById('dismissBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBanner.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Utilisateur ${outcome} l'installation`);
+                deferredPrompt = null;
+                installBanner.style.display = 'none';
+            }
+        });
+
+        dismissBtn.addEventListener('click', () => {
+            installBanner.style.display = 'none';
+        });
+
+        // App installed
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('Ti Moun PWA installée !');
+            showToast('🎉 Ti Moun installé avec succès !');
+        });
+    </script>
+</body>
+</html>
